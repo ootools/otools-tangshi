@@ -1,0 +1,6 @@
+dist/
+dist-pack/
+upstream/
+node_modules/
+data/tmp/
+*.log
