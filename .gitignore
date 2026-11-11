@@ -4,3 +4,4 @@ upstream/
 node_modules/
 data/tmp/
 *.log
+.superpowers/
