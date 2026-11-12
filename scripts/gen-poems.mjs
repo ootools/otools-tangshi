@@ -38,6 +38,7 @@ const TEXT_FIX = {
   '行路难·其二': [[/无嫌猜剧辛/, '无嫌猜。剧辛']],
   哀江头: [[/吞生哭/, '吞声哭']],
   阙题: [[/远隋流水/, '远随流水']],
+  '集灵台·其一': [[/新授，/, '新授箓，']],
 };
 
 /* 兜底：清除任何残留的编者注记「□（…）」 */
@@ -59,8 +60,8 @@ for (const e of entries) {
   }
 
   let body = lines.join('');
+  body = body.replace(EDITOR_NOTE, ''); /* 先清编者注记，再做正字替换 */
   for (const [from, to] of TEXT_FIX[e.title] || []) body = body.replace(from, to);
-  body = body.replace(EDITOR_NOTE, '');
 
   const paragraphs = (body.match(/[^，。！？；]+[，。！？；]/g) || []).map((s) => s.trim()).filter(Boolean);
   if (paragraphs.length < 2) { problems.push(`${e.id} ${e.title}: 断句异常(${paragraphs.length})`); continue; }
