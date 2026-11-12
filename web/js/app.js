@@ -90,21 +90,29 @@
     /* 语言初始化：宿主 locale → html lang → navigator */
     TangI18n.setLocale(TangBridge.language());
     TangI18n.apply();
+
+    /* 数据初始化 */
+    if (window.OTANGSHI_DATA) TangModel.init(window.OTANGSHI_DATA);
+
+    /* 恢复已保存的设置 */
+    var settings = TangStore.getSettings();
+    document.documentElement.setAttribute('data-locked-theme', settings.theme === 'auto' ? '0' : '1');
+    TangApp.applyTheme(settings.theme);
+    if (TangViews.settings) {
+      TangViews.settings.applyAccent(settings.accent);
+      TangViews.settings.applyFont(settings.fontScale);
+    }
+
     TangBridge.onLocaleChange(function (loc) {
       TangI18n.setLocale(loc);
       TangI18n.apply();
       route();
     });
 
-    /* 主题初始化：默认 auto 跟随宿主（Task 15 接入设置持久化） */
-    TangApp.applyTheme('auto');
     TangBridge.onThemeChange(function () {
-      var attr = document.documentElement.getAttribute('data-theme');
       /* 仅 auto 模式响应宿主切换；锁定态（light/dark）忽略 —— Review Focus 5 */
       if (document.documentElement.getAttribute('data-locked-theme') !== '1') {
         TangApp.applyTheme('auto');
-      } else if (attr) {
-        /* 保持锁定 */
       }
     });
 

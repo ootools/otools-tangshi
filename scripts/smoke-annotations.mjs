@@ -22,17 +22,17 @@ const check = (name, cond, detail) => {
   else { failed += 1; console.log(`  FAIL ${name}${detail ? ' — ' + detail : ''}`); }
 };
 
-if (!fs.existsSync(ART)) {
-  console.error('annotations.json 不存在：先撰写 data/src/annotations.json');
-  process.exit(1);
+const annDir = path.join(repoRoot, 'data/src/ann');
+const ann = {};
+for (const f of fs.readdirSync(annDir).filter((n) => n.endsWith('.json')).sort()) {
+  Object.assign(ann, JSON.parse(fs.readFileSync(path.join(annDir, f), 'utf8')));
 }
-
-const ann = JSON.parse(fs.readFileSync(ART, 'utf8'));
 const index = JSON.parse(fs.readFileSync(INDEX, 'utf8'));
 const poems = JSON.parse(fs.readFileSync(POEMS, 'utf8'));
-const bodyOf = new Map(poems.map((p) => [p.id, p.paragraphs.join('')]));
+const bodyOf = new Map(poems.map((p) => [p.id, p]));
+const titleOf = new Map(index.map((e) => [e.id, e.title]));
 
-console.log(`annotations.json：${Object.keys(ann).length} 首（篇目 ${index.length}）`);
+console.log(`注疏分块：${Object.keys(ann).length} 首（篇目 ${index.length}）`);
 
 const missing = index.filter((e) => !ann[e.id]);
 check('每首诗都有注疏', missing.length === 0, `${missing.length} 首缺失：` + missing.slice(0, 8).map((e) => `${e.id}${e.title}`).join('、'));
@@ -56,7 +56,8 @@ check(`赏析非空且 ≤${LIMITS.shang} 字`, bad.shang.length === 0, bad.shan
 for (const e of index) {
   const a = ann[e.id];
   if (!a || !Array.isArray(a.zhu)) continue;
-  const body = bodyOf.get(e.id) || '';
+  const p = bodyOf.get(e.id);
+  const body = (titleOf.get(e.id) || '') + (p ? p.paragraphs.join('') : '') + (p && p.prelude ? p.prelude : '');
   for (const z of a.zhu) {
     if (!z || !z.w) continue;
     const word = String(z.w).split(/[、,，]/)[0].trim();
