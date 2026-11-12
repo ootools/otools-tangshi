@@ -31,7 +31,7 @@ node scripts/build-web.mjs     # 构建 dist/
 node scripts/serve-dist.mjs    # 本地预览（浏览器直开，宿主桥降级可用）
 ```
 
-同步到 OTools 主仓库本地试跑：
+（可选）同步到 OTools 主仓库本地试跑——本插件默认**独立仓库交付**，不预设进宿主；也可直接安装 `dist-pack/*.oplg`：
 
 ```bash
 pwsh -File scripts/deploy-to-otools.ps1 -OtoolsRoot /path/to/OTools
